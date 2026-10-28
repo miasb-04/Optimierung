@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zwei Nebenbedingungen: Linie und Parabel</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#FAF5EA; --card:#F0E6D2; --text:#16324F; --muted:#4A5568;
+  --teal:#19726D; --coral:#C9502F; --line:#D8CBB0;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F2236; --card:#1B3550; --text:#F3EEE2; --muted:#B7C6D6;
+    --teal:#7FD1CA; --coral:#F2A38F; --line:#2E4B6A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F2236; --card:#1B3550; --text:#F3EEE2; --muted:#B7C6D6;
+  --teal:#7FD1CA; --coral:#F2A38F; --line:#2E4B6A; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Nunito Sans',Arial,sans-serif;line-height:1.4}
+main{max-width:1280px;margin:0 auto;padding:24px 20px 40px;display:flex;flex-direction:column;gap:20px}
+h1{font-family:'Rubik',Arial,sans-serif;font-weight:500;font-size:clamp(28px,5vw,44px);margin:0;line-height:1.1}
+h2{font-family:'Rubik',Arial,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+.sub{color:var(--muted);margin:6px 0 0;font-size:clamp(15px,2.2vw,18px)}
+.plots{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:860px){.plots{grid-template-columns:1fr}}
+.box{background:var(--card);border-radius:20px;padding:16px 16px 8px}
+.plot{width:100%;height:clamp(340px,52vh,480px)}
+.cap{color:var(--muted);font-size:14px;margin:4px 4px 8px}
+.panel{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:860px){.panel{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:20px;padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.row{display:flex;flex-direction:column;gap:6px}
+.legend{margin:0;color:var(--muted);font-size:16px}
+.row label{display:flex;justify-content:space-between;font-weight:700;font-size:20px}
+.row label span{font-family:'Rubik',Arial,sans-serif;color:var(--teal);font-size:20px}
+input[type=range]{width:100%;accent-color:var(--teal);height:28px}
+.vals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.val{background:var(--bg);border-radius:14px;padding:12px;text-align:center}
+.val b{display:block;font-family:'Rubik',Arial,sans-serif;font-size:clamp(22px,4vw,34px);font-weight:500;color:var(--teal)}
+.val small{color:var(--muted);font-size:13px}
+.gain{font-family:'Rubik',Arial,sans-serif;font-size:clamp(34px,6vw,56px);font-weight:500;line-height:1.05}
+.hint{color:var(--muted);font-size:15px;min-height:22px}
+.hint.ok{color:var(--teal);font-weight:700}
+button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:10px 18px;background:var(--teal);color:var(--bg);cursor:pointer;align-self:flex-start}
+button.ghost{background:transparent;color:var(--teal);border:2px solid var(--teal)}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.eq{font-family:'Rubik',Arial,sans-serif;font-size:18px;color:var(--text)}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Zwei Nebenbedingungen</h1>
+    <p class="sub">Aus x + y + z = 100 und x + 2y + 3z = 180 folgt y = 80 − 2z und x = 20 + z. Es bleibt nur z frei: eine Linie statt einer Fläche.</p>
+  </header>
+  <section class="plots">
+    <div class="box">
+      <h2>Erlaubte Mengen im Raum</h2>
+      <div id="p3d" class="plot" role="img" aria-label="3D-Linie aller erlaubten Kombinationen von Basic, Comfort und Premium bei zwei Nebenbedingungen"></div>
+      <p class="cap">Die Linie ist der Schnitt der beiden Ebenen. Nur Punkte darauf sind erlaubt.</p>
+    </div>
+    <div class="box">
+      <h2>Gewinn entlang der Linie</h2>
+      <div id="p2d" class="plot" role="img" aria-label="Parabel des Gewinns über Premium mit Maximum bei 24"></div>
+      <p class="cap">Entlang der Linie ist G(z) = −6z² + 288z + 7200 eine Parabel mit einem Gipfel.</p>
+    </div>
+  </section>
+  <p class="legend">● roter Punkt: eure Aufteilung &nbsp;·&nbsp; ◆ gelb: Maximum &nbsp;·&nbsp; nur ein Regler, denn x und y ergeben sich aus z</p>
+  <section class="panel">
+    <div class="card">
+      <div class="row"><label for="sz">Premium (z) <span id="vzs">10</span></label><input id="sz" type="range" min="0" max="40" step="1" value="10"></div>
+      <div class="eq">Basic x = 20 + z &nbsp;·&nbsp; Comfort y = 80 − 2z</div>
+      <div class="btns">
+        <button id="toMax" type="button">Zum Gipfel springen</button>
+        <button id="reset" class="ghost" type="button">Zurücksetzen</button>
+      </div>
+      <p class="hint">Der Regler reicht nur bis 40, weil Comfort sonst negativ würde.</p>
+    </div>
+    <div class="card">
+      <div class="vals">
+        <div class="val"><b id="vx">30</b><small>Basic (x)</small></div>
+        <div class="val"><b id="vy">60</b><small>Comfort (y)</small></div>
+        <div class="val"><b id="vz">10</b><small>Premium (z)</small></div>
+      </div>
+      <div><small style="color:var(--muted)">Gewinn an diesem Punkt</small><div class="gain" id="gain">0</div></div>
+      <div class="hint" id="gap"></div>
+    </div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+(function(){
+  var G = function(z){ return -6*z*z + 288*z + 7200; };
+  var X = function(z){ return 20 + z; }, Y = function(z){ return 80 - 2*z; };
+  var MAXZ = 24, MAXG = G(MAXZ);
+  var fmt = function(v){ return Math.round(v).toLocaleString('de-DE'); };
+
+  var zs=[], xs=[], ys=[], gs=[];
+  for (var z=0; z<=40; z+=0.5){ zs.push(z); xs.push(X(z)); ys.push(Y(z)); gs.push(G(z)); }
+
+  function css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  var cur = 10;
+
+  function build(){
+    var t=css('--text'), l=css('--line'), c=css('--card');
+    var ax3 = function(title){ return {title:{text:title,font:{color:t}}, color:t, gridcolor:l, zerolinecolor:l, backgroundcolor:c, showbackground:true, tickfont:{color:t}, range:[0,80]}; };
+    var lay3 = {
+      paper_bgcolor:'rgba(0,0,0,0)', font:{family:'Nunito Sans, Arial, sans-serif', color:t},
+      margin:{l:0,r:0,t:0,b:0}, showlegend:false,
+      scene:{xaxis:ax3('Basic (x)'), yaxis:ax3('Comfort (y)'), zaxis:ax3('Premium (z)'),
+             aspectmode:'cube', camera:{eye:{x:1.6,y:1.5,z:0.9}}}
+    };
+    var line3 = {type:'scatter3d', mode:'lines', x:xs, y:ys, z:zs,
+      line:{width:10, color:gs, colorscale:[[0,'#E8F4F2'],[0.5,'#7FD1CA'],[1,'#19726D']], cmin:7200, cmax:MAXG},
+      hovertemplate:'Basic %{x:.0f}<br>Comfort %{y:.0f}<br>Premium %{z:.0f}<extra></extra>'};
+    var pt3 = {type:'scatter3d', mode:'markers', x:[X(cur)], y:[Y(cur)], z:[cur],
+      marker:{size:7, color:'#E2674A', line:{color:'#FFFFFF', width:2}}, hoverinfo:'skip'};
+    var mx3 = {type:'scatter3d', mode:'markers+text', x:[X(MAXZ)], y:[Y(MAXZ)], z:[MAXZ],
+      text:['44 · 32 · 24'], textposition:'top center', textfont:{size:14, color:t},
+      marker:{size:9, color:'#F2B134', symbol:'diamond', line:{color:'#16324F', width:2}}, hoverinfo:'skip'};
+    Plotly.react('p3d', [line3, pt3, mx3], lay3, {responsive:true, displaylogo:false, displayModeBar:false});
+
+    var ax2 = function(title, range){ return {title:{text:title}, range:range, gridcolor:l, zerolinecolor:l, color:t, tickfont:{color:t}}; };
+    var lay2 = {
+      paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+      font:{family:'Nunito Sans, Arial, sans-serif', color:t},
+      margin:{l:64,r:16,t:16,b:52}, showlegend:false,
+      xaxis:ax2('Premium (z)', [0,40]), yaxis:ax2('Gewinn', [6500,11500])
+    };
+    var curve = {type:'scatter', mode:'lines', x:zs, y:gs, line:{color:css('--teal'), width:5}, hovertemplate:'Premium %{x:.0f}<br>Gewinn %{y:.0f}<extra></extra>'};
+    var pt2 = {type:'scatter', mode:'markers', x:[cur], y:[G(cur)], marker:{size:14, color:'#E2674A', line:{color:'#FFFFFF', width:2}}, hoverinfo:'skip'};
+    var mx2 = {type:'scatter', mode:'markers+text', x:[MAXZ], y:[MAXG], text:['Maximum: 10.656'], textposition:'bottom center', textfont:{color:t},
+      marker:{size:14, color:'#F2B134', symbol:'diamond', line:{color:'#16324F', width:2}}, hoverinfo:'skip', cliponaxis:false};
+    Plotly.react('p2d', [curve, pt2, mx2], lay2, {responsive:true, displaylogo:false, displayModeBar:false});
+  }
+  build();
+
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    (mq.addEventListener ? mq.addEventListener.bind(mq,'change') : mq.addListener.bind(mq))(build);
+  }
+
+  var sz = document.getElementById('sz'), gap = document.getElementById('gap');
+  function update(){
+    cur = +sz.value;
+    var z = cur, x = X(z), y = Y(z), g = G(z);
+    document.getElementById('vzs').textContent = z;
+    document.getElementById('vx').textContent = x;
+    document.getElementById('vy').textContent = y;
+    document.getElementById('vz').textContent = z;
+    document.getElementById('gain').textContent = fmt(g);
+    if (z === MAXZ){ gap.textContent = 'Das ist der Gipfel: 44 Basic, 32 Comfort, 24 Premium.'; gap.className = 'hint ok'; }
+    else { gap.textContent = fmt(MAXG - g) + ' unter dem Maximum von ' + fmt(MAXG) + '.'; gap.className = 'hint'; }
+    Plotly.restyle('p3d', {x:[[x]], y:[[y]], z:[[z]]}, [1]);
+    Plotly.restyle('p2d', {x:[[z]], y:[[g]]}, [1]);
+  }
+  sz.addEventListener('input', update);
+  document.getElementById('toMax').addEventListener('click', function(){ sz.value = MAXZ; update(); });
+  document.getElementById('reset').addEventListener('click', function(){ sz.value = 10; update(); });
+  update();
+})();
+</script>
+</body>
+</html>
